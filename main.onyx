@@ -1,0 +1,59 @@
+package main;
+
+use core {math, conv, string, println, printf};
+
+distance :: (x1: f64, y1: f64, x2: f64, y2: f64) -> f64 {
+    return math.sqrt(math.pow((x2 - x1), 2) + math.pow((y2 - y1), 2));
+}
+
+sum :: (numbers: ..i32) -> i32 {
+    result: i32 = 0;
+    for numbers do result += it;
+    return result;
+}
+
+add_five :: (x: $T) -> T {
+    return x + 5;
+}
+
+to_i32 :: #match {
+    (x: f32) -> i32 { return cast(i32) math.ceil(x); }
+}
+
+#match to_i32 (x: f64) -> i32 { return cast(i32) x; };
+
+#overload
+to_i32 :: (x: str) -> i32 { return cast(i32) conv.str_to_i64(x); };
+
+CanAdd :: interface (T: type_expr, U: type_expr) {
+    t as T;
+    u as U;
+
+    t + u;
+}
+
+Addable :: interface (T: type_expr) {
+    t as T;
+
+    { t + t } -> T;
+}
+
+add :: (a: $T, b: $U) -> T where CanAdd(T, U) {
+    return a + b;
+}
+
+#operator + (s1: str, s2: str) -> str {
+    return string.concat(s1, s2);
+}
+
+loop :: (arr: [] i32, $body: Code) -> void {
+    for item: i32, index: i32 in arr {
+        if (index % 2 == 0) do continue;
+        it := item;
+        #unquote body;
+    }
+}
+
+Vector2 :: [2] i32;
+
+main :: () -> void ---
